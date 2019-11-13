@@ -3,7 +3,8 @@ import basicTile from '../../assets/basic_tile.png';
 import ball from '../../assets/ball.png';
 import hole from '../../assets/hole.png';
 import { TileType, WINDOW_HEIGHT, WINDOW_WIDTH, TILE_SIZE } from '../constants';
-import { mapGenerator, parseMapData } from '../utils/mapReader';
+import { parseMapData } from '../utils/mapReader';
+import { mapGenerator } from '../utils/mapGenerator';
 
 const BALL = 'ball';
 

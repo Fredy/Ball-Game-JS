@@ -1,35 +1,12 @@
 import { TileType as TextureTile, TILE_SIZE } from '../constants';
 
-const TileType = {
+export const TileType = {
   SQUARE_WALL: 1,
   START: 2,
   END: 3,
   HOLE: 4,
 };
 
-const generatorMapper = {
-  w: TileType.SQUARE_WALL,
-  p: TileType.START,
-  h: TileType.HOLE,
-};
-
-export function mapGenerator(map) {
-  const result = [];
-  map.forEach((row, y) => {
-    row.split('').forEach((v, x) => {
-      if (v === ' ') {
-        return;
-      }
-      result.push({
-        position: [x, y],
-        type: generatorMapper[v],
-        orientation: 'up',
-      });
-    });
-  });
-
-  return result;
-}
 export function parseMapData(mapData) {
   const bounds = { bottom: -TILE_SIZE, right: -TILE_SIZE };
   const tiles = [];
