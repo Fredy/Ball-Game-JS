@@ -8,11 +8,11 @@ const config = {
   height: WINDOW_HEIGHT,
   parent: "content",
   physics: {
-    default: "arcade",
-    arcade: {
+    default: "matter",
+    matter: {
       debug: true,
-    //   gravity: { y: 300 } //We don't need gravity for this game
-    }
+      gravity: { y: 0, x:0 } //We don't need gravity for this game
+    },
   },
   scene: [Game]
 };

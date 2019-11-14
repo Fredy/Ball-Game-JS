@@ -8,6 +8,11 @@ import { mapGenerator } from '../utils/mapGenerator';
 
 const BALL = 'ball';
 
+const CollissionCategory = {
+  BALL: 1,
+  WALL: 2,
+};
+
 const example = [
   'wwwwwwwwww',
   'w        w',
@@ -41,20 +46,31 @@ export default class Game extends Scene {
   }
 
   create() {
-    const walls = this.physics.add.staticGroup();
+    const walls = [];
     const mapData = parseMapData(mapGenerator(example));
-    mapData.tiles.forEach((params) => walls.create(...params));
+    mapData.tiles.forEach((params) => {
+      walls.push(
+        this.matter.add
+          .image(...params)
+          .setStatic(true)
+          .setCollisionCategory(CollissionCategory.WALL)
+          .setCollidesWith(CollissionCategory.BALL)
+      );
+    });
 
     mapData.holes.forEach((params) => this.add.image(...params));
 
     const playerPos = mapData.start;
-    this.player = this.physics.add
+    this.player = this.matter.add
       .image(playerPos.x, playerPos.y, BALL)
       .setScale(0.9);
-    // this.player.setCircle(TILE_SIZE / 2); this doesn't work as expected
+    this.player.setCircle(TILE_SIZE / 2); //this doesn't work as expected
     this.player.setBounce(0.2);
+    this.player
+      .setCollisionCategory(CollissionCategory.BALL)
+      .setCollidesWith(CollissionCategory.WALL);
 
-    this.physics.add.collider(walls, this.player);
+    // this.matter.add.collider(walls, this.player);
 
     const cam = this.cameras.main;
     cam.setBounds(
@@ -76,13 +92,13 @@ export default class Game extends Scene {
 
   update(time, delta) {
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-160);
+      this.player.setVelocityX(-6);
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(160);
+      this.player.setVelocityX(6);
     } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(160);
+      this.player.setVelocityY(6);
     } else if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-160);
+      this.player.setVelocityY(-6);
     } else {
       this.player.setVelocity(0);
     }

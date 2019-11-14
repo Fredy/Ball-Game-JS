@@ -62,4 +62,4 @@ typings/
 
 .cache/
 .vscode/
-
+dist/
