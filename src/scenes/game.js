@@ -1,4 +1,3 @@
-import { Scene } from 'phaser';
 import basicTile from '../../assets/basic_tile.png';
 import ball from '../../assets/ball.png';
 import hole from '../../assets/hole.png';
@@ -32,7 +31,7 @@ const example = [
   'wwwwwwwwww',
 ];
 
-export default class Game extends Scene {
+export default class Game extends Phaser.State {
   constructor() {
     super({
       key: 'game',
@@ -40,69 +39,70 @@ export default class Game extends Scene {
   }
 
   preload() {
-    this.load.image(TileType.BASIC, basicTile);
-    this.load.image(BALL, ball);
-    this.load.image(TileType.HOLE, hole);
+    this.game.load.image(TileType.BASIC, basicTile);
+    this.game.load.image(BALL, ball);
+    this.game.load.image(TileType.HOLE, hole);
   }
 
   create() {
-    const walls = [];
+    this.game.physics.startSystem(Phaser.Physics.P2JS);
+    this.game.physics.p2.setImpactEvents(true);
+
+    var playerCollisionGroup = this.game.physics.p2.createCollisionGroup();
+    var wallsCollisionGroup = this.game.physics.p2.createCollisionGroup();
+    // this.game.physics.p2.gravity.;
+
+    this.walls = this.game.add.group();
+    this.walls.enableBody = true;
+    this.walls.physicsBodyType = Phaser.Physics.P2JS;
     const map = mapGenerator(example);
-    console.log(map);
     const mapData = parseMapData(map);
+
+    // Create walls
     mapData.tiles.forEach((params) => {
-      walls.push(
-        this.matter.add
-          .image(...params)
-          .setStatic(true)
-          .setCollisionCategory(CollissionCategory.WALL)
-          .setCollidesWith(CollissionCategory.BALL)
-      );
+      const tmp = this.walls.create(...params);
+      tmp.body.static = true;
+      tmp.body.setCollisionGroup(wallsCollisionGroup);
+      tmp.body.collides(playerCollisionGroup);
     });
 
-    mapData.holes.forEach((params) => this.add.image(...params));
+    mapData.holes.forEach((params) => {
+      const tmp = this.game.add.sprite(...params);
+
+      this.game.physics.p2.enable(tmp); // FIXME is this necessary?
+    });
 
     const playerPos = mapData.start;
-    this.player = this.matter.add
-      .image(playerPos.x, playerPos.y, BALL)
-      .setScale(0.9);
-    this.player.setCircle(TILE_SIZE / 2); //this doesn't work as expected
-    this.player.setBounce(0.2);
-    this.player
-      .setCollisionCategory(CollissionCategory.BALL)
-      .setCollidesWith(CollissionCategory.WALL);
+    this.player = this.game.add.sprite(playerPos.x, playerPos.y, BALL);
+    this.player.scale.set(0.9);
+    this.game.physics.p2.enable(this.player);
+    this.player.body.bounce = 0.2;
+    this.player.body.setCircle(TILE_SIZE / 2);
 
-    // this.matter.add.collider(walls, this.player);
+    this.player.body.setCollisionGroup(playerCollisionGroup);
+    this.player.body.collides(wallsCollisionGroup);
 
-    const cam = this.cameras.main;
-    cam.setBounds(
+    this.game.camera.follow(this.player);
+    this.game.world.setBounds(
       -TILE_SIZE / 2,
       -TILE_SIZE / 2,
       mapData.bounds.right,
       mapData.bounds.bottom
     );
 
-    cam.startFollow(this.player);
-    cam.setBackgroundColor(0xeeeeee);
-
-    this.cursors = this.input.keyboard.createCursorKeys();
-    // cam.setViewport(0, 0, 270, 480);
-    // NOTE: Game Objects are positioned based on their center by default. here
-    // all the objects have their center in 0,0. To modify this use .setOrigin()
-    // cam.centerOn(0, 0);
+    this.cursors = this.game.input.keyboard.createCursorKeys();
   }
 
   update(time, delta) {
+    this.player.body.setZeroVelocity();
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-6);
+      this.player.body.velocity.x = -100;
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(6);
+      this.player.body.velocity.x = 100;
     } else if (this.cursors.down.isDown) {
-      this.player.setVelocityY(6);
+      this.player.body.velocity.y = 100;
     } else if (this.cursors.up.isDown) {
-      this.player.setVelocityY(-6);
-    } else {
-      this.player.setVelocity(0);
+      this.player.body.velocity.y = -100;
     }
   }
 }

@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "phaser": "^3.20.1"
+    "phaser-ce": "^2.13.3"
   },
   "devDependencies": {
     "babel-eslint": "^10.0.3",

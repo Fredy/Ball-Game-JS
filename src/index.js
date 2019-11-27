@@ -1,20 +1,14 @@
-import phaser from "phaser";
-import { Game } from "./scenes";
-import { WINDOW_HEIGHT, WINDOW_WIDTH } from "./constants";
+import './global';
+import { Game } from './scenes';
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from './constants';
 
 const config = {
-  type: phaser.WEBGL,
+  type: Phaser.WEBGL,
   width: WINDOW_WIDTH,
   height: WINDOW_HEIGHT,
-  parent: "content",
-  physics: {
-    default: "matter",
-    matter: {
-      debug: true,
-      gravity: { y: 0, x:0 } //We don't need gravity for this game
-    },
-  },
-  scene: [Game]
+  backgroundColor: '#eeeeee',
+  parent: 'content',
+  state: Game,
 };
 
-const game = new phaser.Game(config);
+const game = new Phaser.Game(config);
