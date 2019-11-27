@@ -47,7 +47,9 @@ export default class Game extends Scene {
 
   create() {
     const walls = [];
-    const mapData = parseMapData(mapGenerator(example));
+    const map = mapGenerator(example);
+    console.log(map);
+    const mapData = parseMapData(map);
     mapData.tiles.forEach((params) => {
       walls.push(
         this.matter.add
